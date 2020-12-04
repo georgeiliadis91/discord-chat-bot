@@ -16,8 +16,29 @@ client.on("message", (message) => {
   if (message.author.bot) return;
   // detect commands
   if (message.content.startsWith(PREFIX)) {
-    const cmdName = message.content.substring(PREFIX.length);
-    message.channel.send(cmdName);
+    const [cmdName, ...args] = message.content
+      .trim()
+      .substring(PREFIX.length)
+      .split(/\s+/);
+
+    if (cmdName === "kick") {
+      if (args.length === 0) {
+        message.reply("Missing id");
+      }
+      // this wont work on owners
+      const member = message.guild.members.cache.get(args[0]);
+      console.log(args[0]);
+
+      if (member) {
+        member.kick();
+      } else {
+        message.channel.send("That member was not found");
+      }
+
+      message.channel.send("Kicking user");
+    }
+
+    // message.channel.send(cmdName);
   }
 });
 
