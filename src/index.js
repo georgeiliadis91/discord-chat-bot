@@ -22,15 +22,26 @@ client.on("message", (message) => {
       .split(/\s+/);
 
     if (cmdName === "kick") {
-      if (args.length === 0) {
-        message.reply("Missing id");
+      // check permissions and status of the one excecuting the command.
+      if (!message.member.hasPermission("KICK_MEMBERS")) {
+        returnmessage.reply("You do not have permissions");
       }
+
+      if (args.length === 0) {
+        return message.reply("Missing id");
+      }
+
       // this wont work on owners
       const member = message.guild.members.cache.get(args[0]);
       console.log(args[0]);
 
       if (member) {
-        member.kick();
+        member
+          .kick()
+          .then((member) => message.channel.send(`${member} has been kicked`))
+          .catch((error) =>
+            message.channel.send(`Error, something went wrong`)
+          );
       } else {
         message.channel.send("That member was not found");
       }
@@ -41,14 +52,6 @@ client.on("message", (message) => {
     // message.channel.send(cmdName);
   }
 });
-
-// client.on("message", (message) => {
-//   if (message.author.bot) return;
-//   console.log(`${message.author.tag} says: ${message.content}`);
-//   if (message.content === "hello") {
-//     message.channel.send("hello");
-//   }
-// });
 
 // Have to login first.
 client.login(process.env.DISCORD_BOT_TOKEN);
