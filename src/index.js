@@ -18,7 +18,7 @@ client.on("ready", () => {
   );
 });
 
-client.on("message", (message) => {
+client.on("message", async (message) => {
   if (message.author.bot) return;
   // detect commands
   if (message.content.startsWith(PREFIX)) {
@@ -38,8 +38,10 @@ client.on("message", (message) => {
           return message.reply("Missing id");
         }
 
-        const member = message.guild.members.cache.get(args[0]);
+        // apparently this is async and you need to wait for it to resolve and get the data from cache
+        const member = await message.guild.members.fetch(args[0]);
 
+        console.log(args[0]);
         console.log(member);
 
         if (member) {
@@ -49,13 +51,13 @@ client.on("message", (message) => {
             .catch((error) =>
               message.channel.send(`I cannot kick that user :( ${error}`)
             );
+          return;
         } else {
           return message.channel.send("That member was not found");
         }
-
       case "ban":
         if (!message.member.hasPermission("BAN_MEMBERS")) {
-          returnmessage.reply("You do not have permissions");
+          return message.reply("You do not have permissions");
         }
 
         if (args.length === 0) {
@@ -74,10 +76,10 @@ client.on("message", (message) => {
 });
 
 client.on("messageReactionAdd", (reaction, user) => {
-  console.log("runs!");
   const { name } = reaction.emoji;
+  // this is get for some reason and the above is fetch
   const member = reaction.message.guild.members.cache.get(user.id);
-  if (reaction.message.id === 785241668416569425) {
+  if (reaction.message.id === "785241668416569425") {
     switch (name) {
       case "🍎":
         member.roles.add("785241846686679071");
@@ -96,10 +98,9 @@ client.on("messageReactionAdd", (reaction, user) => {
 });
 
 client.on("messageReactionRemove", (reaction, user) => {
-  console.log("runs!");
   const { name } = reaction.emoji;
   const member = reaction.message.guild.members.cache.get(user.id);
-  if (reaction.message.id === 785241668416569425) {
+  if (reaction.message.id === "785241668416569425") {
     switch (name) {
       case "🍎":
         member.roles.remove("785241846686679071");
@@ -117,5 +118,4 @@ client.on("messageReactionRemove", (reaction, user) => {
   }
 });
 
-// Have to login first.
 client.login(process.env.DISCORD_BOT_TOKEN);
