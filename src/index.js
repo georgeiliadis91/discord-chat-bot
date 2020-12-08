@@ -1,15 +1,13 @@
 import dotenv from "dotenv";
 import { PREFIX } from "./constants";
-import { Client } from "discord.js";
-
-const client = new Client({ partials: ["MESSAGE", "REACTION"] });
+import { Client, WebhookClient } from "discord.js";
 
 dotenv.config();
-
-// const webhookClient = new WebhookClient(
-//   process.env.WEBHOOK_ID,
-//   process.env.WEBHOOK_TOKEN
-// );
+const client = new Client({ partials: ["MESSAGE", "REACTION"] });
+const webBookClient = new WebhookClient(
+  process.env.WEBHOOK_ID,
+  process.env.WEBHOOK_TOKEN
+);
 
 // Client takes events, on event instance triggers the callback function
 client.on("ready", () => {
@@ -61,7 +59,7 @@ client.on("message", async (message) => {
         }
 
         if (args.length === 0) {
-          return message.reply("Missing id");
+          fetch;
         }
 
         return message.reply("Trying to ban someone?!");
