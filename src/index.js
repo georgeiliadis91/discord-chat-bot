@@ -4,9 +4,9 @@ import { Client, WebhookClient } from "discord.js";
 
 dotenv.config();
 const client = new Client({ partials: ["MESSAGE", "REACTION"] });
-const webBookClient = new WebhookClient(
-  process.env.WEBHOOK_ID,
-  process.env.WEBHOOK_TOKEN
+const webHookClient = new WebhookClient(
+  process.env.DISCORD_WEBHOOK_ID,
+  process.env.DISCORD_WEBHOOK_TOKEN
 );
 
 // Client takes events, on event instance triggers the callback function
@@ -39,9 +39,6 @@ client.on("message", async (message) => {
         // apparently this is async and you need to wait for it to resolve and get the data from cache
         const member = await message.guild.members.fetch(args[0]);
 
-        console.log(args[0]);
-        console.log(member);
-
         if (member) {
           member
             .kick()
@@ -59,14 +56,25 @@ client.on("message", async (message) => {
         }
 
         if (args.length === 0) {
-          fetch;
+          return message.reply("Please provide an ID");
+        }
+
+        try {
+          const user = await message.guild.members.ban(args[0]);
+          if (user) {
+            return message.channel.send(`User with id: ${args[0]} was banned`);
+          }
+        } catch (err) {
+          console.log(err);
+          return message.channel.send("An error occured. Check Permissions");
         }
 
         return message.reply("Trying to ban someone?!");
-      // case "announce":
-      //   const msg = args.join(" ");
-      //   webhookClient.send(msg);
-      //   return;
+      case "repeat":
+        const msg = args.join(" ");
+        webHookClient.send(msg);
+        return;
+
       default:
         return message.reply("Command not recognised.");
     }
